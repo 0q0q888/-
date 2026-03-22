@@ -1,0 +1,24 @@
+# 依赖与构建
+frontend/node_modules/
+backend/target/
+
+# Python
+**/__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 大模型与权重（必忽略）
+deepseekapi/deepseekr1-1.5b-merged/
+yolo/best.pt
+*.pt
+*.bin
+*.safetensors
+
+# IDE（可选）
+.idea/
+.vscode/
+*.iml
+
+# 环境/密钥
+.env

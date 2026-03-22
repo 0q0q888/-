@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campus.backend.mapper.GoodsOrderMapper">
+
+  <!-- GoodsOrder 实体映射，包含商品标题 goodsTitle -->
+  <resultMap id="GoodsOrderResultMap" type="com.campus.backend.model.GoodsOrder">
+    <id column="id" property="id"/>
+    <result column="goods_id" property="goodsId"/>
+    <result column="buyer_id" property="buyerId"/>
+    <result column="seller_id" property="sellerId"/>
+    <result column="price" property="price"/>
+    <result column="status" property="status"/>
+    <result column="create_time" property="createTime"/>
+    <result column="update_time" property="updateTime"/>
+    <result column="goods_title" property="goodsTitle"/>
+  </resultMap>
+
+  <!-- 新增订单 -->
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO t_goods_order (goods_id, buyer_id, seller_id, price, status)
+    VALUES (#{goodsId}, #{buyerId}, #{sellerId}, #{price}, #{status})
+  </insert>
+
+  <!-- 我买到的：buyer_id = 当前用户 -->
+  <select id="findMyBought" resultMap="GoodsOrderResultMap">
+    SELECT
+      o.id,
+      o.goods_id,
+      o.buyer_id,
+      o.seller_id,
+      o.price,
+      o.status,
+      o.create_time,
+      o.update_time,
+      g.title AS goods_title
+    FROM t_goods_order o
+      LEFT JOIN t_goods g ON o.goods_id = g.id
+    WHERE o.buyer_id = #{buyerId}
+    ORDER BY o.create_time DESC
+  </select>
+
+  <!-- 我卖出的：seller_id = 当前用户 -->
+  <select id="findMySold" resultMap="GoodsOrderResultMap">
+    SELECT
+      o.id,
+      o.goods_id,
+      o.buyer_id,
+      o.seller_id,
+      o.price,
+      o.status,
+      o.create_time,
+      o.update_time,
+      g.title AS goods_title
+    FROM t_goods_order o
+      LEFT JOIN t_goods g ON o.goods_id = g.id
+    WHERE o.seller_id = #{sellerId}
+    ORDER BY o.create_time DESC
+  </select>
+
+  <!-- 根据订单ID查询 -->
+  <select id="findById" resultMap="GoodsOrderResultMap">
+    SELECT
+      o.id,
+      o.goods_id,
+      o.buyer_id,
+      o.seller_id,
+      o.price,
+      o.status,
+      o.create_time,
+      o.update_time,
+      g.title AS goods_title
+    FROM t_goods_order o
+      LEFT JOIN t_goods g ON o.goods_id = g.id
+    WHERE o.id = #{id}
+    LIMIT 1
+  </select>
+
+  <update id="updateStatus">
+    UPDATE t_goods_order
+    SET status = #{status}, update_time = NOW()
+    WHERE id = #{id}
+  </update>
+
+  <!-- 按商品ID + 买家ID 查询一条订单（用于“私聊我”复用已有订单） -->
+  <select id="findByGoodsAndBuyer" resultMap="GoodsOrderResultMap">
+    SELECT
+      o.id,
+      o.goods_id,
+      o.buyer_id,
+      o.seller_id,
+      o.price,
+      o.status,
+      o.create_time,
+      o.update_time,
+      g.title AS goods_title
+    FROM t_goods_order o
+      LEFT JOIN t_goods g ON o.goods_id = g.id
+    WHERE o.goods_id = #{goodsId}
+      AND o.buyer_id = #{buyerId}
+    ORDER BY o.id ASC
+    LIMIT 1
+  </select>
+
+</mapper>

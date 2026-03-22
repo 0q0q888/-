@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campus.backend.mapper.GoodsMapper">
+
+  <!-- Goods 实体映射，包含卖家昵称 sellerNickname -->
+  <resultMap id="GoodsResultMap" type="com.campus.backend.model.Goods">
+    <id column="id" property="id"/>
+    <result column="title" property="title"/>
+    <result column="description" property="description"/>
+    <result column="price" property="price"/>
+    <result column="images" property="images"/>
+    <result column="seller_id" property="sellerId"/>
+    <result column="status" property="status"/>
+    <result column="create_time" property="createTime"/>
+    <result column="update_time" property="updateTime"/>
+    <result column="seller_nickname" property="sellerNickname"/>
+  </resultMap>
+
+  <!-- 商品列表（带关键字模糊搜索 + 卖家昵称） -->
+  <select id="findList" resultMap="GoodsResultMap">
+    SELECT
+      g.id,
+      g.title,
+      g.description,
+      g.price,
+      g.images,
+      g.seller_id,
+      g.status,
+      g.create_time,
+      g.update_time,
+      u.nickname AS seller_nickname
+    FROM t_goods g
+      LEFT JOIN t_user u ON g.seller_id = u.id
+    <where>
+      <!-- 大厅只展示在售商品，已售出不显示 -->
+      AND g.status = 'ON_SALE'
+      <if test="keyword != null and keyword != ''">
+        AND (g.title LIKE CONCAT('%', #{keyword}, '%')
+          OR g.description LIKE CONCAT('%', #{keyword}, '%'))
+      </if>
+    </where>
+    ORDER BY g.create_time DESC
+  </select>
+
+  <!-- 根据ID查单个商品 -->
+  <select id="findById" resultMap="GoodsResultMap">
+    SELECT
+      g.id,
+      g.title,
+      g.description,
+      g.price,
+      g.images,
+      g.seller_id,
+      g.status,
+      g.create_time,
+      g.update_time,
+      u.nickname AS seller_nickname
+    FROM t_goods g
+      LEFT JOIN t_user u ON g.seller_id = u.id
+    WHERE g.id = #{id}
+    LIMIT 1
+  </select>
+
+  <!-- 新增商品 -->
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO t_goods (title, description, price, images, seller_id, status)
+    VALUES (#{title}, #{description}, #{price}, #{images}, #{sellerId}, #{status})
+  </insert>
+
+  <!-- 更新商品状态 -->
+  <update id="updateStatus">
+    UPDATE t_goods
+    SET status = #{status}, update_time = NOW()
+    WHERE id = #{id}
+  </update>
+
+</mapper>

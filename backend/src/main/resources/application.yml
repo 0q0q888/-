@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: campus-service-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/campus_service?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true}
+    username: root
+    password: 123456
+
+app:
+  upload-dir: uploads
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+deepseek:
+  # 可切换云端 / 本地 deepseekapi：
+  # - 云端：DEEPSEEK_BASE_URL=https://api.deepseek.com 且 DEEPSEEK_API_KEY=你的Key
+  # - 本地：DEEPSEEK_BASE_URL=http://localhost:9000（本地服务不强制校验 key）
+  base-url: http://localhost:9000
+  # 从环境变量 DEEPSEEK_API_KEY 读取你的 DeepSeek 密钥；本地模式可随便填
+  api-key:
+
+

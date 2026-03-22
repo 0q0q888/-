@@ -1,0 +1,5 @@
+
+pydantic==2.10.3
+
+accelerate==0.34.2
+

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>校园即时服务</title>
+  </head>
+  <body>
+    <div id="app">
+      <div id="app-loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f1f5f9;color:#64748b;font-size:14px;font-family:system-ui,sans-serif;">
+        <div style="width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:app-load-spin 0.8s linear infinite;"></div>
+        <p style="margin-top:12px;">加载中…</p>
+        <p id="app-load-timeout" style="margin-top:8px;font-size:12px;display:none;">加载较慢，请检查网络或使用 Chrome / Safari 最新版</p>
+      </div>
+    </div>
+    <script>
+      window.addEventListener('load', function () {
+        setTimeout(function () {
+          var el = document.getElementById('app-load-timeout');
+          if (el && document.getElementById('app-loading')) el.style.display = 'block';
+        }, 12000);
+      });
+    </script>
+    <style>@keyframes app-load-spin{to{transform:rotate(360deg);}}</style>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

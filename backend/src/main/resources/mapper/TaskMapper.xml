@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campus.backend.mapper.TaskMapper">
+
+  <!-- 含 deadline_time（若表中无此列需执行：ALTER TABLE t_task ADD COLUMN deadline_time datetime NULL AFTER status） -->
+  <resultMap id="TaskResultMap" type="com.campus.backend.model.Task">
+    <id column="id" property="id"/>
+    <result column="title" property="title"/>
+    <result column="description" property="description"/>
+    <result column="reward_amount" property="rewardAmount"/>
+    <result column="publisher_id" property="publisherId"/>
+    <result column="receiver_id" property="receiverId"/>
+    <result column="status" property="status"/>
+    <result column="deadline_time" property="deadlineTime"/>
+    <result column="create_time" property="createTime"/>
+    <result column="update_time" property="updateTime"/>
+    <result column="publisher_nickname" property="publisherNickname"/>
+    <result column="receiver_nickname" property="receiverNickname"/>
+  </resultMap>
+
+  <select id="findAll" resultMap="TaskResultMap">
+    SELECT t.id, t.title, t.description, t.reward_amount,
+           t.publisher_id, t.receiver_id, t.status,
+           t.deadline_time, t.create_time, t.update_time,
+           up.nickname AS publisher_nickname, ur.nickname AS receiver_nickname
+    FROM t_task t
+    LEFT JOIN t_user up ON t.publisher_id = up.id
+    LEFT JOIN t_user ur ON t.receiver_id = ur.id
+    ORDER BY t.create_time DESC
+  </select>
+
+  <select id="findById" resultMap="TaskResultMap">
+    SELECT t.id, t.title, t.description, t.reward_amount,
+           t.publisher_id, t.receiver_id, t.status,
+           t.deadline_time, t.create_time, t.update_time,
+           up.nickname AS publisher_nickname, ur.nickname AS receiver_nickname
+    FROM t_task t
+    LEFT JOIN t_user up ON t.publisher_id = up.id
+    LEFT JOIN t_user ur ON t.receiver_id = ur.id
+    WHERE t.id = #{id}
+    LIMIT 1
+  </select>
+
+  <select id="findMyAccepted" resultMap="TaskResultMap">
+    SELECT t.id, t.title, t.description, t.reward_amount,
+           t.publisher_id, t.receiver_id, t.status,
+           t.deadline_time, t.create_time, t.update_time,
+           up.nickname AS publisher_nickname, ur.nickname AS receiver_nickname
+    FROM t_task t
+    LEFT JOIN t_user up ON t.publisher_id = up.id
+    LEFT JOIN t_user ur ON t.receiver_id = ur.id
+    WHERE t.receiver_id = #{userId}
+    ORDER BY t.create_time DESC
+  </select>
+
+  <select id="findMyPublished" resultMap="TaskResultMap">
+    SELECT t.id, t.title, t.description, t.reward_amount,
+           t.publisher_id, t.receiver_id, t.status,
+           t.deadline_time, t.create_time, t.update_time,
+           up.nickname AS publisher_nickname, ur.nickname AS receiver_nickname
+    FROM t_task t
+    LEFT JOIN t_user up ON t.publisher_id = up.id
+    LEFT JOIN t_user ur ON t.receiver_id = ur.id
+    WHERE t.publisher_id = #{userId}
+    ORDER BY t.create_time DESC
+  </select>
+
+  <update id="takeTask">
+    UPDATE t_task
+    SET receiver_id = #{receiverId}, status = 'TAKEN', update_time = NOW()
+    WHERE id = #{taskId} AND status = 'OPEN'
+    AND (deadline_time IS NULL OR deadline_time > NOW())
+  </update>
+
+  <update id="finishTask">
+    UPDATE t_task SET status = 'FINISHED', update_time = NOW()
+    WHERE id = #{taskId} AND status = 'TAKEN'
+  </update>
+
+  <update id="cancelTask">
+    UPDATE t_task SET status = 'CANCELLED', update_time = NOW()
+    WHERE id = #{taskId} AND status = 'TAKEN'
+  </update>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO t_task (title, description, reward_amount, publisher_id, receiver_id, status, deadline_time)
+    VALUES (#{title}, #{description}, #{rewardAmount}, #{publisherId}, NULL, 'OPEN', #{deadlineTime})
+  </insert>
+</mapper>

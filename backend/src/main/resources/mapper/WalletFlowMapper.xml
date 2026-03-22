@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campus.backend.mapper.WalletFlowMapper">
+
+  <insert id="insert">
+    INSERT INTO t_wallet_flow (user_id, amount, type, biz_type, biz_id, remark)
+    VALUES (#{userId}, #{amount}, #{type}, #{bizType}, #{bizId}, #{remark})
+  </insert>
+</mapper>
