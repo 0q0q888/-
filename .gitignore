@@ -8,17 +8,34 @@ backend/target/
 .venv/
 venv/
 
-# 大模型与权重（必忽略）
+# 大模型与权重
 deepseekapi/deepseekr1-1.5b-merged/
-yolo/best.pt
 *.pt
 *.bin
 *.safetensors
 
-# IDE（可选）
-.idea/
-.vscode/
-*.iml
+# 数据库与敏感数据（不提交）
+*.sql
+*.db
 
-# 环境/密钥
+# 环境变量与本地配置
 .env
+.env.*
+**/application-local.yml
+**/application-secret.yml
+
+# 上传目录（常含用户文件）
+uploads/
+**/uploads/
+
+# 个人/复试材料
+*.doc
+*.docx
+*.pdf
+
+# 数据集（若很大或涉隐私可忽略；若要公开再删掉这两行）
+dataset.json
+
+# 杂项
+$null
+.idea/
